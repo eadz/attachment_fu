@@ -57,6 +57,7 @@ module Technoweenie # :nodoc:
       # === Optional configuration parameters
       #
       # * <tt>:server</tt> - The server to make requests to. Defaults to <tt>s3.amazonaws.com</tt>.
+      # * <tt>:cloudfront_server</tt> - The server url's will be written with. Defaults to nil.
       # * <tt>:port</tt> - The port to the requests should be made on. Defaults to 80 or 443 if <tt>:use_ssl</tt> is set.
       # * <tt>:use_ssl</tt> - If set to true, <tt>:port</tt> will be implicitly set to 443, unless specified otherwise. Defaults to false.
       #
@@ -155,6 +156,10 @@ module Technoweenie # :nodoc:
           @hostname ||= s3_config[:server] || AWS::S3::DEFAULT_HOST
         end
         
+        def self.cloudfront_hostname
+          @cloudfront_hostname ||= s3_config[:cloudfront_server]
+        end
+        
         def self.port_string
           @port_string ||= (s3_config[:port].nil? || s3_config[:port] == (s3_config[:use_ssl] ? 443 : 80)) ? '' : ":#{s3_config[:port]}"
         end
@@ -166,6 +171,10 @@ module Technoweenie # :nodoc:
           
           def s3_hostname
             Technoweenie::AttachmentFu::Backends::S3Backend.hostname
+          end
+          
+          def s3_cloudfront_hostname
+            Technoweenie::AttachmentFu::Backends::S3Backend.cloudfront_hostname
           end
           
           def s3_port_string
@@ -207,7 +216,7 @@ module Technoweenie # :nodoc:
         #
         # The optional thumbnail argument will output the thumbnail's filename (if any).
         def s3_url(thumbnail = nil)
-          File.join(s3_protocol + s3_hostname + s3_port_string, bucket_name, full_filename(thumbnail))
+          File.join(s3_protocol + (s3_cloudfront_hostname || s3_hostname) + s3_port_string, bucket_name, full_filename(thumbnail))
         end
         alias :public_filename :s3_url
 
@@ -255,6 +264,10 @@ module Technoweenie # :nodoc:
         
         def s3_hostname
           Technoweenie::AttachmentFu::Backends::S3Backend.hostname
+        end
+        
+        def s3_cloudfront_hostname
+          Technoweenie::AttachmentFu::Backends::S3Backend.cloudfront_hostname
         end
           
         def s3_port_string
