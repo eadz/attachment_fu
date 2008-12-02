@@ -177,7 +177,7 @@ begin
   class S3WithPathPrefixAttachment < S3Attachment
     has_attachment :storage => :s3, :path_prefix => 'some/custom/path/prefix', :processor => :rmagick
     validates_as_attachment
-  end
+  end  
 rescue
   puts "S3 error: #{$!}"
 end

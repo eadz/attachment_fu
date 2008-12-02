@@ -42,13 +42,14 @@ class S3Test < Test::Unit::TestCase
 
     test_against_subclass :test_should_create_valid_url, S3Attachment
     
-    # def test_should_create_valid_cloudfront_url(klass = S3Attachment)
-    #   attachment_model klass
-    #   attachment = upload_file :filename => '/files/rails.png'
-    #   assert_equal "#{s3_protocol}#{s3_cloudfront_hostname}#{s3_port_string}/#{attachment.bucket_name}/#{attachment.full_filename}", attachment.s3_url
-    # end
-    # 
-    # test_against_subclass :test_should_create_valid_cloudfront_url, S3Attachment
+    def test_should_create_valid_cloudfront_url(klass = S3Attachment)
+      attachment_model klass
+      attachment = upload_file :filename => '/files/rails.png'
+      Technoweenie::AttachmentFu::Backends::S3Backend.stubs(:cloudfront_hostname).returns('something.cloudfront.net')
+      assert_equal "#{s3_protocol}#{s3_cloudfront_hostname}#{s3_port_string}/#{attachment.full_filename}", attachment.s3_url
+    end
+  
+    test_against_subclass :test_should_create_valid_cloudfront_url, S3Attachment
 
     def test_should_create_authenticated_url(klass = S3Attachment)
       attachment_model klass
@@ -114,6 +115,10 @@ class S3Test < Test::Unit::TestCase
       
       def s3_hostname
         Technoweenie::AttachmentFu::Backends::S3Backend.hostname
+      end
+      
+      def s3_cloudfront_hostname
+        Technoweenie::AttachmentFu::Backends::S3Backend.cloudfront_hostname
       end
 
       def s3_port_string

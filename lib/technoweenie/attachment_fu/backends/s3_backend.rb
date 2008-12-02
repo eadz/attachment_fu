@@ -216,7 +216,11 @@ module Technoweenie # :nodoc:
         #
         # The optional thumbnail argument will output the thumbnail's filename (if any).
         def s3_url(thumbnail = nil)
-          File.join(s3_protocol + (s3_cloudfront_hostname || s3_hostname) + s3_port_string, bucket_name, full_filename(thumbnail))
+          if s3_cloudfront_hostname
+            File.join(s3_protocol + s3_cloudfront_hostname + s3_port_string, full_filename(thumbnail))
+          else
+            File.join(s3_protocol + s3_hostname + s3_port_string, bucket_name, full_filename(thumbnail))
+          end
         end
         alias :public_filename :s3_url
 
