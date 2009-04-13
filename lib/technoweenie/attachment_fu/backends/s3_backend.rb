@@ -223,6 +223,10 @@ module Technoweenie # :nodoc:
           end
         end
         alias :public_filename :s3_url
+        
+	def non_cached_filename(thumbnail = nil)
+            File.join(s3_protocol + s3_hostname + s3_port_string, bucket_name, full_filename(thumbnail))
+	end
 
         # All private objects are accessible via an authenticated GET request to the S3 servers. You can generate an 
         # authenticated url for an object like this:
